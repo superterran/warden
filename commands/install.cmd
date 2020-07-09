@@ -60,6 +60,13 @@ if [[ "$OSTYPE" =~ ^linux ]] && [[ ! -f "${WARDEN_HOME_DIR}/nodnsconfig" ]]; the
     && ! grep '^nameserver 127.0.0.1$' /etc/resolv.conf >/dev/null
   then
     echo "==> Configuring resolver for .test domains (requires sudo privileges)"
+    
+    if [ -f /etc/redhat-release ]; then
+      echo "==> Configuring NetworkManager to direct .test domains correctly for Fedora (requires sudo privileges)"
+      echo -e "[main] \n dns=dnsmasq" > /etc/NetworkManager/conf.d/00-warden.conf
+      echo "server=/test/127.0.0.1" > /etc/NetworkManager/dnsmasq.d/00-warden.conf
+    fi
+    
     if ! sudo grep '^prepend domain-name-servers 127.0.0.1;$' /etc/dhcp/dhclient.conf >/dev/null 2>&1; then
       echo "  + Configuring dhclient to prepend dns with 127.0.0.1 resolver (requires sudo privileges)"
 
