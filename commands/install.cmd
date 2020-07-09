@@ -102,7 +102,11 @@ fi
 if [[ ! -f "${WARDEN_HOME_DIR}/tunnel/ssh_key" ]]; then
   echo "==> Generating rsa key pair for tunnel into sshd service"
   mkdir -p "${WARDEN_HOME_DIR}/tunnel"
-  ssh-keygen -b 2048 -t rsa -f "${WARDEN_HOME_DIR}/tunnel/ssh_key" -N "" -C "user@tunnel.warden.test"
+  if  grep -q "Fedora release 32" /etc/redhat-release; then
+      ssh-keygen -m PEM -f "${WARDEN_HOME_DIR}/tunnel/ssh_key" -N "" -C "user@tunnel.warden.test"
+  else
+      ssh-keygen -b 2048 -t rsa -f "${WARDEN_HOME_DIR}/tunnel/ssh_key" -N "" -C "user@tunnel.warden.test"
+  fi
 fi
 
 ## if host machine does not have composer installed, this directory will otherwise be created by docker with root:root
